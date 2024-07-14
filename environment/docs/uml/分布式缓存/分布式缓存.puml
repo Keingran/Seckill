@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface DistributedCacheService{
+    + put(String key, String value)
+    + put(String key, Object value)
+    + put(String key, Object value, long timeout, TimeUnit unit)
+    + put(String key, Object value, long expireTime)
+    + <T> T getObject(String key, Class<T> targetClass)
+    + String getString(String key)
+    + <T> List<T> getList(String key, Class<T> targetClass)
+    + Boolean delete(String key)
+    + Boolean hasKey(String key)
+}
+
+class RedisCacheService{
+    + put(String key, String value)
+    + put(String key, Object value)
+    + put(String key, Object value, long timeout, TimeUnit unit)
+    + put(String key, Object value, long expireTime)
+    + <T> T getObject(String key, Class<T> targetClass)
+    + String getString(String key)
+    + <T> List<T> getList(String key, Class<T> targetClass)
+    + Boolean delete(String key)
+    + Boolean hasKey(String key)
+}
+
+DistributedCacheService <|.. RedisCacheService : 实现
+@enduml

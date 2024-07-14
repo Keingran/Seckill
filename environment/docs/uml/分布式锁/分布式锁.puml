@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface DistributedLockFactory{
+    + DistributedLock getDistributedLock(String key)
+}
+
+interface DistributedLock {
+    + boolean tryLock(long waitTime, long leaseTime, TimeUnit unit) throws InterruptedException
+    + void lock(long leaseTime, TimeUnit unit)
+    + void unlock()
+    + boolean isLocked()
+    + boolean isHeldByThread(long threadId)
+    + boolean isHeldByCurrentThread()
+}
+
+class RedissonLockFactory{
+    - RedissonClient redissonClient
+    + DistributedLock getDistributedLock(String key)
+}
+
+class 匿名内部类{
+    + boolean tryLock(long waitTime, long leaseTime, TimeUnit unit) throws InterruptedException
+    + void lock(long leaseTime, TimeUnit unit)
+    + void unlock()
+    + boolean isLocked()
+    + boolean isHeldByThread(long threadId)
+    + boolean isHeldByCurrentThread()
+}
+
+DistributedLock <|.. 匿名内部类 :实现
+DistributedLockFactory <|.. RedissonLockFactory : 实现
+RedissonLockFactory ..> 匿名内部类 : 依赖
+
+@enduml

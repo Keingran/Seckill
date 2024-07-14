@@ -1,0 +1,63 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface SeckillCacheService{
+    + String buildCacheKey(Object key)
+}
+
+interface SeckillGoodsListCacheService{
+    + SeckillBusinessCache<List<SeckillGoods>> getCachedGoodsList(Long activityId, Long version)
+    + SeckillBusinessCache<List<SeckillGoods>> tryUpdateSeckillGoodsCacheByLock(Long activityId)
+}
+
+interface SeckillGoodsService{
+    + int saveSeckillGoods(SeckillGoodsCommond seckillGoodsCommond)
+    + SeckillGoods getSeckillGoodsId(Long id)
+    + List<SeckillGoods> getSeckillGoodsByActivityId(Long activityId)
+    + int updateStatus(Integer status, Long id)
+    + int updateAvailableStock(Integer count, Long id)
+    + Integer getAvailableStockById(Long id)
+    + List<SeckillGoodsDTO> getSeckillGoodsList(Long activityId, Long version)
+}
+
+class SeckillGoodsListCacheServiceImpl{
+    - LocalCacheService<Long, SeckillBusinessCache<List<SeckillGoods>>> localCacheService
+    - {static} String SECKILL_GOODS_LIST_UPDATE_CACHE_LOCK_KEY
+    - Lock localCacheUpdatelock
+    - DistributedCacheService distributedCacheService
+    - SeckillGoodsRepository seckillGoodsRepository
+    - DistributedLockFactory distributedLockFactory
+    + String buildCacheKey(Object key)
+    + SeckillBusinessCache<List<SeckillGoods>> getCachedGoodsList(Long activityId, Long version)
+    - SeckillBusinessCache<List<SeckillGoods>> getDistributedCache(Long activityId)
+    + SeckillBusinessCache<List<SeckillGoods>> tryUpdateSeckillGoodsCacheByLock(Long activityId)
+}
+
+class SeckillGoodsServiceImpl{
+    - SeckillGoodsRepository seckillGoodsRepository
+    - SeckillActivityRepository seckillActivityRepository
+    - SeckillGoodsListCacheService seckillGoodsListCacheService
+    + int saveSeckillGoods(SeckillGoodsCommond seckillGoodsCommond)
+    + SeckillGoods getSeckillGoodsId(Long id)
+    + List<SeckillGoods> getSeckillGoodsByActivityId(Long activityId)
+    + int updateStatus(Integer status, Long id)
+    + int updateAvailableStock(Integer count, Long id)
+    + Integer getAvailableStockById(Long id)
+    + List<SeckillGoodsDTO> getSeckillGoodsList(Long activityId, Long version)
+}
+
+class SeckillGoodsController{
+    - SeckillGoodsService seckillGoodsService
+    + ResponseMessage<String> saveSeckillGoods(SeckillGoodsCommond seckillGoodsCommond)
+    + ResponseMessage<SeckillGoods> getSeckillGoodsId(Long id)
+    + ResponseMessage<List<SeckillGoods>> getSeckillGoodsByActivityId(Long activityId)
+    + ResponseMessage<String> updateStatus(Integer status, Long id)
+    + ResponseMessage<List<SeckillGoodsDTO>> getSeckillGoodsByActivityId(Long activityId, Long version)
+}
+
+SeckillCacheService <|-- SeckillGoodsListCacheService : 继承
+SeckillGoodsListCacheService <|.. SeckillGoodsListCacheServiceImpl : 实现
+SeckillGoodsService <|.. SeckillGoodsServiceImpl : 实现
+SeckillGoodsListCacheService <.. SeckillGoodsServiceImpl : 依赖
+SeckillGoodsService <.. SeckillGoodsController : 依赖
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+class SeckillCommonCache {
+    # boolean exist
+    # Long version
+    # boolean retryLater
+    + getter()
+    + setter()
+}
+
+class SeckillBusinessCache<T>{
+    - T data
+    + getter()
+    + setter()
+    + with(T data):SeckillBusinessCache<T>
+    + withVersion(Long version): SeckillBusinessCache<T>
+    + retryLater(): SeckillBusinessCache<T>
+    + notExist(): SeckillBusinessCache<T>
+}
+
+SeckillCommonCache <|-- SeckillBusinessCache : 继承
+@enduml

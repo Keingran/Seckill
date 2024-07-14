@@ -1,0 +1,68 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface SeckillCacheService{
+    + String buildCacheKey(Object key)
+}
+
+interface SeckillActivityCacheService{
+    + SeckillBusinessCache<SeckillActivity> getCachedSeckillActivity(Long activityId, Long version)
+    + SeckillBusinessCache<SeckillActivity> tryUpdateSeckillActivityCacheByLock(Long activityId)
+}
+
+interface SeckillActivityService{
+    + void saveSeckillActivity(SeckillActivityCommand seckillActivityCommand)
+    + List<SeckillActivity> getSeckillActivityList(Integer status)
+    + List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status)
+    + SeckillActivity getSeckillActivityById(Long id)
+    + int updateStatus(Integer status, Long id)
+    + List<SeckillActivityDTO> getSeckillActivityList(Integer status, Long version)
+    + SeckillActivityDTO getSeckillActivity(Long id, Long version)
+}
+
+class SeckillActivityCacheServiceImpl{
+    - LocalCacheService<Long, SeckillBusinessCache<SeckillActivity>> localCacheService
+    - {static} String SECKILL_ACTIVITY_UPDATE_CACHE_LOCK_KEY
+    - Lock localCacheUpdatelock
+    - DistributedCacheService distributedCacheService
+    - SeckillActivityRepository seckillActivityRepository
+    - DistributedLockFactory distributedLockFactory
+    + String buildCacheKey(Object key)
+    - SeckillBusinessCache<SeckillActivity> getDistributedCache(Long activityId)
+    + SeckillBusinessCache<SeckillActivity> getCachedSeckillActivity(Long activityId, Long version)
+    + SeckillBusinessCache<SeckillActivity> tryUpdateSeckillActivityCacheByLock(Long activityId)
+}
+
+class SeckillActivityServiceImpl{
+    - SeckillActivityRepository seckillActivityRepository
+    - SeckillActivityListCacheService seckillActivityListCacheService
+    + void saveSeckillActivity(SeckillActivityCommand seckillActivityCommand)
+    + List<SeckillActivity> getSeckillActivityList(Integer status)
+    + List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status)
+    + SeckillActivity getSeckillActivityById(Long id)
+    + int updateStatus(Integer status, Long id)
+    + List<SeckillActivityDTO> getSeckillActivityList(Integer status, Long version)
+    + SeckillActivityDTO getSeckillActivity(Long id, Long version)
+}
+
+class SeckillActivityController{
+    - SeckillActivityService seckillActivityService
+    + ResponseMessage<String> saveSeckillActivityDTO(SeckillActivityCommand seckillActivityCommand)
+    + ResponseMessage<List<SeckillActivity>> getSeckillActivityList(@RequestParam(value = "status", required = false) Integer status)
+    + ResponseMessage<List<SeckillActivityDTO>> getSeckillActivityList(@RequestParam(value = "status", required = false) Integer status,
+      @RequestParam(value = "version", required = false) Long version)
+    + ResponseMessage<SeckillActivityDTO> getSeckillActivityById(@RequestParam(value = "id", required = false) Long id,
+      @RequestParam(value = "version", required = false) Long version)
+    + ResponseMessage<List<SeckillActivity>> getSeckillActivityListBetweenStartTimeAndEndTime(@RequestParam(value = "currentTime", required = false)
+      String currentTime, @RequestParam(value = "status", required = false)Integer status)
+    + ResponseMessage<SeckillActivity> getSeckillActivityById(@RequestParam(value = "id", required = false) Long id)
+    + ResponseMessage<String> updateStatus(@RequestParam(value = "status", required = false) Integer status,
+      @RequestParam(value = "id", required = false) Long id)
+}
+
+SeckillCacheService <|-- SeckillActivityCacheService : 继承
+SeckillActivityCacheService <|.. SeckillActivityCacheServiceImpl : 实现
+SeckillActivityService <|.. SeckillActivityServiceImpl : 实现
+SeckillActivityCacheService <.. SeckillActivityServiceImpl : 依赖
+SeckillActivityService <.. SeckillActivityController : 依赖
+@enduml

@@ -1,0 +1,74 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface EventI
+
+interface DomainEventI
+
+interface EventPublisher{
+    + void publish(DomainEventI domainEvent)
+}
+
+interface SeckillOrderDomainService{
+    + boolean saveSeckillOrder(SeckillOrder seckillOrder)
+    + List<SeckillOrder> getSeckillOrderByUserId(Long userId)
+    + List<SeckillOrder> getSeckillOrderByActivityId(Long activityId)
+}
+
+interface SeckillOrderService{
+    + SeckillOrder saveSeckillOrder(SeckillOrderDTO seckillOrderDTO)
+    + List<SeckillOrder> getSeckillOrderByUserId(Long userId)
+    + List<SeckillOrder> getSeckillOrderByActivityId(Long activityId)
+}
+
+class SeckillOrderDomainServiceImpl{
+    - SeckillOrderRepository seckillOrderRepository
+    - EventPublisher eventPublisher
+    + boolean saveSeckillOrder(SeckillOrder seckillOrder)
+    + List<SeckillOrder> getSeckillOrderByUserId(Long userId)
+    + List<SeckillOrder> getSeckillOrderByActivityId(Long activityId)
+}
+
+class SeckillOrderServiceImpl{
+    - SeckillGoodsService seckillGoodsService
+    - SeckillOrderDomainService seckillOrderDomainService
+    + SeckillOrder saveSeckillOrder(SeckillOrderDTO seckillOrderDTO)
+    + List<SeckillOrder> getSeckillOrderByUserId(Long userId)
+    + List<SeckillOrder> getSeckillOrderByActivityId(Long activityId)
+}
+
+class SeckillBaseEvent{
+    - Long id
+    - Integer status
+    + SeckillBaseEvent(Long id, Integer status)
+    + Long getId()
+    + void setId(Long id)
+    + Integer getStatus()
+    + void setStatus(Integer status)
+}
+
+class SeckillOrderEvent{
+    + SeckillOrderEvent(Long id, Integer status)
+}
+
+class LocalDomainEventPublisher{
+    - EventBusI eventBus
+    + void publish(DomainEventI domainEvent)
+}
+
+class SeckillOrderEventHandler{
+    + Response execute(SeckillOrderEvent seckillOrderEvent)
+}
+
+EventI <|-- DomainEventI : 继承
+DomainEventI <|..  SeckillBaseEvent : 实现
+SeckillOrderDomainService <|.. SeckillOrderDomainServiceImpl : 实现
+SeckillOrderService <|.. SeckillOrderServiceImpl : 实现
+EventPublisher <.. SeckillOrderDomainServiceImpl : 依赖
+SeckillOrderDomainService <.. SeckillOrderServiceImpl : 依赖
+EventPublisher <|.. LocalDomainEventPublisher : 实现
+DomainEventI <. LocalDomainEventPublisher : 依赖
+SeckillBaseEvent <|- SeckillOrderEvent : 继承
+SeckillOrderEvent <. SeckillOrderEventHandler : 依赖
+@enduml

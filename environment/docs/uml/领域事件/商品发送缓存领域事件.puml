@@ -1,0 +1,110 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface EventI
+
+interface DomainEventI
+
+interface EventPublisher{
+    + void publish(DomainEventI domainEvent)
+}
+
+interface SeckillGoodsCacheService{
+    + SeckillBusinessCache<SeckillGoods> getSeckillGoods(Long goodsId, Long version)
+    + SeckillBusinessCache<SeckillGoods> tryUpdateSeckillGoodsCacheByLock(Long goodsId)
+}
+
+interface SeckillGoodsListCacheService{
+    + SeckillBusinessCache<List<SeckillGoods>> getCachedGoodsList(Long activityId, Long version)
+    + SeckillBusinessCache<List<SeckillGoods>> tryUpdateSeckillGoodsCacheByLock(Long activityId)
+}
+
+interface SeckillGoodsService {
+    + void saveSeckillGoods(SeckillGoodsCommond seckillGoodsCommond)
+    + SeckillGoods getSeckillGoodsId(Long id)
+    + List<SeckillGoods> getSeckillGoodsByActivityId(Long activityId)
+    + void updateStatus(Integer status, Long id)
+    + void updateAvailableStock(Integer count, Long id)
+    + Integer getAvailableStockById(Long id)
+    + List<SeckillGoodsDTO> getSeckillGoodsList(Long activityId, Long version)
+    + SeckillGoodsDTO getSeckillGoods(Long id, Long version)
+}
+
+class SeckillGoodsServiceImpl{
+    - SeckillGoodsDomainService seckillGoodsDomainService
+    - SeckillActivityDomainService seckillActivityDomainService
+    - SeckillGoodsListCacheService seckillGoodsListCacheService
+    - SeckillGoodsCacheService seckillGoodsCacheService
+    + void saveSeckillGoods(SeckillGoodsCommond seckillGoodsCommond)
+    + SeckillGoods getSeckillGoodsId(Long id)
+    + List<SeckillGoods> getSeckillGoodsByActivityId(Long activityId)
+    + void updateStatus(Integer status, Long id)
+    + void updateAvailableStock(Integer count, Long id)
+    + Integer getAvailableStockById(Long id)
+    + List<SeckillGoodsDTO> getSeckillGoodsList(Long activityId, Long version)
+    + SeckillGoodsDTO getSeckillGoods(Long id, Long version)
+}
+
+interface SeckillGoodsDomainService{
+    + void saveSeckillGoods(SeckillGoods seckillGoods)
+    + SeckillGoods getSeckillGoodsId(Long id)
+    + List<SeckillGoods> getSeckillGoodsByActivityId(Long activityId)
+    + void updateStatus(Integer status, Long id)
+    + void updateAvailableStock(Integer count, Long id)
+    + Integer getAvailableStockById(Long id)
+}
+
+class SeckillGoodsDomainServiceImpl{
+    - SeckillGoodsRepository seckillGoodsRepository
+    - EventPublisher eventPublisher
+    + void saveSeckillGoods(SeckillGoods seckillGoods)
+    + SeckillGoods getSeckillGoodsId(Long id)
+    + List<SeckillGoods> getSeckillGoodsByActivityId(Long activityId)
+    + void updateStatus(Integer status, Long id)
+    + void updateAvailableStock(Integer count, Long id)
+    + Integer getAvailableStockById(Long id)
+}
+
+class SeckillBaseEvent{
+    - Long id
+    - Integer status
+    + SeckillBaseEvent(Long id, Integer status)
+    + Long getId()
+    + void setId(Long id)
+    + Integer getStatus()
+    + void setStatus(Integer status)
+}
+
+class SeckillGoodsEvent{
+    - Long activityId
+    + SeckillGoodsEvent(Long id, Long activityId, Integer status)
+    + Long getActivityId()
+    + void setActivityId(Long activityId)
+}
+
+class LocalDomainEventPublisher{
+    - EventBusI eventBus
+    + void publish(DomainEventI domainEvent)
+}
+
+class SeckillGoodsEventHandler{
+    - SeckillGoodsCacheService seckillGoodsCacheService
+    - SeckillGoodsListCacheService seckillGoodsListCacheService
+    + Response execute(SeckillGoodsEvent seckillGoodsEvent)
+}
+
+EventI <|-- DomainEventI : 继承
+DomainEventI <|..  SeckillBaseEvent : 实现
+SeckillGoodsService <|..  SeckillGoodsServiceImpl : 实现
+SeckillGoodsDomainService <|..  SeckillGoodsDomainServiceImpl : 实现
+EventPublisher <|.. LocalDomainEventPublisher : 实现
+SeckillGoodsDomainService <. SeckillGoodsServiceImpl : 依赖
+SeckillGoodsCacheService <.. SeckillGoodsServiceImpl : 依赖
+SeckillGoodsListCacheService <.. SeckillGoodsServiceImpl : 依赖
+DomainEventI <. LocalDomainEventPublisher : 依赖
+SeckillBaseEvent <|-- SeckillGoodsEvent : 继承
+SeckillGoodsCacheService <. SeckillGoodsEventHandler : 依赖
+SeckillGoodsListCacheService <... SeckillGoodsEventHandler : 依赖
+SeckillGoodsEventHandler.> SeckillGoodsEvent  : 依赖
+@enduml

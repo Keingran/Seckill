@@ -1,0 +1,87 @@
+version: '3.2'
+
+networks:
+  default-cluster-apps:
+    driver: overlay
+
+volumes:
+  prometheus_data: {}
+services:
+  seckill-user:
+    image: seckill-user
+    container_name: seckill-user
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 8081:8081
+    networks:
+      - default-cluster-apps
+    restart: on-failure
+  seckill-activity:
+    image: seckill-activity
+    container_name: seckill-activity
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 8082:8082
+      - 20880:20880
+    networks:
+      - default-cluster-apps
+    restart: on-failure
+  seckill-goods:
+    image: seckill-goods
+    container_name: seckill-goods
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 8083:8083
+      - 20881:20881
+    networks:
+      - default-cluster-apps
+    restart: on-failure
+  seckill-order:
+    image: seckill-order
+    container_name: seckill-order
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 8084:8084
+      - 20882:20882
+    networks:
+      - default-cluster-apps
+    restart: on-failure
+  seckill-reservation:
+    image: seckill-reservation
+    container_name: seckill-reservation
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 8086:8086
+      - 20886:20886
+    networks:
+      - default-cluster-apps
+    restart: on-failure
+  seckill-stock:
+    image: seckill-stock
+    container_name: seckill-stock
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 8085:8085
+      - 20883:20883
+    networks:
+      - default-cluster-apps
+    restart: on-failure
+  seckill-gateway:
+    image: seckill-gateway
+    container_name: seckill-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 10002:10002
+    networks:
+      - default-cluster-apps
+    restart: on-failure
+
+
+

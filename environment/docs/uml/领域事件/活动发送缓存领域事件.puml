@@ -1,0 +1,102 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface EventI
+
+interface DomainEventI
+
+interface EventPublisher{
+    + void publish(DomainEventI domainEvent)
+}
+
+interface SeckillActivityCacheService{
+    + SeckillBusinessCache<SeckillActivity> getCachedSeckillActivity(Long activityId, Long version)
+    + SeckillBusinessCache<SeckillActivity> tryUpdateSeckillActivityCacheByLock(Long activityId)
+}
+
+interface SeckillActivityListCacheService{
+    + SeckillBusinessCache<List<SeckillActivity>> getCachedActivities(Integer status, Long version)
+    + SeckillBusinessCache<List<SeckillActivity>> tryUpdateSeckillActivityCacheByLock(Integer status)
+}
+
+interface SeckillActivityService {
+    + void saveSeckillActivity(SeckillActivityCommand seckillActivityCommand);
+    + List<SeckillActivity> getSeckillActivityList(Integer status);
+    + List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status);
+    + SeckillActivity getSeckillActivityById(Long id);
+    + void updateStatus(Integer status, Long id);
+    + List<SeckillActivityDTO> getSeckillActivityList(Integer status, Long version);
+    + SeckillActivityDTO getSeckillActivity(Long id, Long version);
+}
+
+class SeckillActivityServiceImpl{
+    - SeckillActivityDomainService seckillActivityDomainService
+    - SeckillActivityListCacheService seckillActivityListCacheService
+    - SeckillActivityCacheService seckillActivityCacheService
+    + void saveSeckillActivity(SeckillActivityCommand seckillActivityCommand);
+    + List<SeckillActivity> getSeckillActivityList(Integer status);
+    + List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status);
+    + SeckillActivity getSeckillActivityById(Long id);
+    + void updateStatus(Integer status, Long id);
+    + List<SeckillActivityDTO> getSeckillActivityList(Integer status, Long version);
+    + SeckillActivityDTO getSeckillActivity(Long id, Long version);
+}
+
+interface SeckillActivityDomainService{
+    + void saveSeckillActivity(SeckillActivity seckillActivity)
+    + List<SeckillActivity> getSeckillActivityList(Integer status)
+    + List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status)
+    + SeckillActivity getSeckillActivityById(Long id)
+    + void updateStatus(Integer status, Long id)
+}
+
+class SeckillActivityDomainServiceImpl{
+    - SeckillActivityRepository seckillActivityRepository
+    - EventPublisher eventPublisher
+    + void saveSeckillActivity(SeckillActivity seckillActivity)
+    + List<SeckillActivity> getSeckillActivityList(Integer status)
+    + List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status)
+    + SeckillActivity getSeckillActivityById(Long id)
+    + void updateStatus(Integer status, Long id)
+}
+
+class SeckillBaseEvent{
+    - Long id
+    - Integer status
+    + SeckillBaseEvent(Long id, Integer status)
+    + Long getId()
+    + void setId(Long id)
+    + Integer getStatus()
+    + void setStatus(Integer status)
+}
+
+class SeckillActivityEvent{
+    + SeckillActivityEvent(Long id, Integer status)
+}
+
+class LocalDomainEventPublisher{
+    - EventBusI eventBus
+    + void publish(DomainEventI domainEvent)
+}
+
+class SeckillActivityEventHandler{
+    - SeckillActivityCacheService seckillActivityCacheService
+    - SeckillActivityListCacheService seckillActivityListCacheService
+    + Response execute(SeckillActivityEvent seckillActivityEvent)
+}
+
+EventI <|-- DomainEventI : 继承
+DomainEventI <|..  SeckillBaseEvent : 实现
+SeckillActivityService <|..  SeckillActivityServiceImpl : 实现
+SeckillActivityDomainService <|..  SeckillActivityDomainServiceImpl : 实现
+EventPublisher <|.. LocalDomainEventPublisher : 实现
+SeckillActivityDomainService <. SeckillActivityServiceImpl : 依赖
+SeckillActivityCacheService <.. SeckillActivityServiceImpl : 依赖
+SeckillActivityListCacheService <.. SeckillActivityServiceImpl : 依赖
+DomainEventI <. LocalDomainEventPublisher : 依赖
+SeckillBaseEvent <|-- SeckillActivityEvent : 继承
+SeckillActivityCacheService <. SeckillActivityEventHandler : 依赖
+SeckillActivityListCacheService <... SeckillActivityEventHandler : 依赖
+SeckillActivityEventHandler.> SeckillActivityEvent  : 依赖
+@enduml
