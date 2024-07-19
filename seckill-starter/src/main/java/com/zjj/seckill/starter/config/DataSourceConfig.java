@@ -3,6 +3,8 @@ package com.zjj.seckill.starter.config;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.sql.SQLException;
 
@@ -11,7 +13,8 @@ import java.sql.SQLException;
  *
  * @author zhujunjian
  */
-public class JdbcConfig {
+@Configuration
+public class DataSourceConfig {
 
     @Value("${jdbc.initialSize}")
     private int initialSize;
@@ -42,7 +45,8 @@ public class JdbcConfig {
     @Value("${jdbc.password}")
     private String password;
 
-    @Bean
+    @Bean(name = "dataSource")
+    @Primary
     public DruidDataSource dataSource() throws SQLException {
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUrl(url);
