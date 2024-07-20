@@ -11,6 +11,7 @@ import java.util.Date;
  * @author zhujunjian
  */
 public class SeckillActivity implements Serializable {
+
     private static final long serialVersionUID = -7079319520596736847L;
 
     /**

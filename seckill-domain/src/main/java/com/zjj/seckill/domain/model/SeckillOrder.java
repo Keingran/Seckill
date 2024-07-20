@@ -12,6 +12,7 @@ import java.util.Date;
  * @author zhujunjian
  */
 public class SeckillOrder implements Serializable {
+
     private static final long serialVersionUID = -2900817329676795585L;
 
     /**

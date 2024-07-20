@@ -17,14 +17,20 @@ public enum SeckillUserStatus {
      */
     FREEZE(2);
 
+    /**
+     * 是否正常
+     *
+     * @param status status
+     * @return true/false
+     */
+    public static boolean isNormal(Integer status) {
+        return NORMAL.getCode().equals(status);
+    }
+
     private final Integer code;
 
     SeckillUserStatus(Integer code) {
         this.code = code;
-    }
-
-    public static boolean isNormal(Integer status) {
-        return NORMAL.getCode().equals(status);
     }
 
     public Integer getCode() {

@@ -13,4 +13,10 @@ public interface SeckillUserService {
      * 根据用户名获取用户信息
      */
     SeckillUser getSeckillUserByUserName(String userName);
+
+    /**
+     * 登录
+     */
+    String login(String userName, String password);
+
 }

@@ -6,8 +6,9 @@ package com.zjj.seckill.domain.enums;
  * @author zhujunjian
  */
 public enum SeckillOrderStatus {
+
     /**
-     * 以创建
+     * 已创建
      */
     CREATED(1),
 
@@ -17,7 +18,7 @@ public enum SeckillOrderStatus {
     PAID(2),
 
     /**
-     * 以取消
+     * 已取消
      */
     CANCELED(0),
 
@@ -26,18 +27,30 @@ public enum SeckillOrderStatus {
      */
     DELETED(-1);
 
+    /**
+     * 是否已取消
+     *
+     * @param status status
+     * @return true/false
+     */
+    public static boolean isCanceled(Integer status) {
+        return CANCELED.getCode().equals(status);
+    }
+
+    /**
+     * 是否已删除
+     *
+     * @param status status
+     * @return true/false
+     */
+    public static boolean isDeleted(Integer status) {
+        return DELETED.getCode().equals(status);
+    }
+
     private final Integer code;
 
     SeckillOrderStatus(Integer code) {
         this.code = code;
-    }
-
-    public static boolean isCancled(Integer status) {
-        return CANCELED.getCode().equals(status);
-    }
-
-    public static boolean isDeleted(Integer status) {
-        return DELETED.getCode().equals(status);
     }
 
     public Integer getCode() {

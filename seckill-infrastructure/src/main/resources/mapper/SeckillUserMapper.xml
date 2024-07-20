@@ -6,11 +6,12 @@
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="salt" property="salt" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, user_name, password, status
+        id, user_name, password, salt, status
     </sql>
 
     <select id="getSeckillUserByUserName" resultMap="baseResultMap">

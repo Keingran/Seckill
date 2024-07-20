@@ -27,6 +27,11 @@ public class SeckillUser implements Serializable {
     private String password;
 
     /**
+     * 盐值
+     */
+    private String salt;
+
+    /**
      * 状态 1：正常；2：冻结
      */
     private Integer status;
@@ -53,6 +58,14 @@ public class SeckillUser implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public Integer getStatus() {
