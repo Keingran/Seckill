@@ -1,8 +1,10 @@
 package com.zjj.seckill.application.service.impl;
 
+import com.zjj.seckill.application.manager.RedisManager;
 import com.zjj.seckill.application.manager.TokenManager;
 import com.zjj.seckill.application.service.SeckillUserService;
 import com.zjj.seckill.domain.code.HttpCode;
+import com.zjj.seckill.domain.constants.RedisCacheConstants;
 import com.zjj.seckill.domain.exception.SeckillException;
 import com.zjj.seckill.domain.model.SeckillUser;
 import com.zjj.seckill.domain.repository.SeckillUserRepository;
@@ -23,7 +25,16 @@ public class SeckillUserServiceImpl implements SeckillUserService {
     private TokenManager tokenManager;
 
     @Autowired
+    private RedisManager redisManager;
+
+    @Autowired
     private SeckillUserRepository seckillUserRepository;
+
+    @Override
+    public SeckillUser getSeckillUserByUserId(Long userId) {
+        return redisManager.getCacheObject(RedisCacheConstants.LOGIN_TOKEN_KEY + userId);
+    }
+
 
     @Override
     public SeckillUser getSeckillUserByUserName(String userName) {
@@ -48,7 +59,7 @@ public class SeckillUserServiceImpl implements SeckillUserService {
 
         // 校验密码
         String encryptPassword = DigestUtils.md5DigestAsHex((password + seckillUser.getSalt()).getBytes());
-        if (!encryptPassword.equals(seckillUser.getPassword())){
+        if (!encryptPassword.equals(seckillUser.getPassword())) {
             throw new SeckillException(HttpCode.PASSWORD_IS_ERROR);
         }
 

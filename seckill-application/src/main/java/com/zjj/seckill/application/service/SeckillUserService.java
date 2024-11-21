@@ -10,6 +10,11 @@ import com.zjj.seckill.domain.model.SeckillUser;
 public interface SeckillUserService {
 
     /**
+     * 根据用户id获取用户信息
+     */
+    SeckillUser getSeckillUserByUserId(Long userId);
+
+    /**
      * 根据用户名获取用户信息
      */
     SeckillUser getSeckillUserByUserName(String userName);
