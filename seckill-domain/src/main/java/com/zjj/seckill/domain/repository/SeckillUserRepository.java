@@ -10,7 +10,13 @@ import com.zjj.seckill.domain.model.SeckillUser;
 public interface SeckillUserRepository {
 
     /**
+     * 新增
+     */
+    int insert(SeckillUser seckillUser);
+
+    /**
      * 根据用户名获取用户信息
      */
     SeckillUser getSeckillUserByUserName(String userName);
+
 }

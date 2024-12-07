@@ -26,8 +26,9 @@ public class SecurityAdapter implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 // 对于登录login，允许匿名访问
                 .excludePathPatterns("/user/login")
+                .excludePathPatterns("/user/insert")
 //                .excludePathPatterns("/error")
-                .excludePathPatterns("/favicon.ico")
+//                .excludePathPatterns("/favicon.ico")
         ;
     }
 }

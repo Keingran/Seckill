@@ -1,5 +1,6 @@
 package com.zjj.seckill.application.service;
 
+import com.zjj.seckill.domain.dto.SeckillUserDTO;
 import com.zjj.seckill.domain.model.SeckillUser;
 
 /**
@@ -8,6 +9,11 @@ import com.zjj.seckill.domain.model.SeckillUser;
  * @author zhujunjian
  */
 public interface SeckillUserService {
+
+    /**
+     * 新增
+     */
+    Long insert(SeckillUserDTO seckillUserDTO);
 
     /**
      * 根据用户id获取用户信息

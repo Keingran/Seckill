@@ -13,6 +13,7 @@ public enum HttpCode {
     USERNAME_IS_NULL(2003, "用户名不能为空"),
     PASSWORD_IS_NULL(2004, "密码不能为空"),
     USERNAME_IS_ERROR(2005, "用户名错误"),
+    USERNAME_IS_EXIST(2005, "用户名已存在"),
     PASSWORD_IS_ERROR(2006, "密码错误"),
     SERVER_EXCEPTION(2007, "服务器异常"),
     STOCK_LT_ZERO(2008, "库存不足"),

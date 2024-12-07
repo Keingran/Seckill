@@ -5,6 +5,8 @@ import com.zjj.seckill.application.manager.TokenManager;
 import com.zjj.seckill.application.service.SeckillUserService;
 import com.zjj.seckill.domain.code.HttpCode;
 import com.zjj.seckill.domain.constants.RedisCacheConstants;
+import com.zjj.seckill.domain.dto.SeckillLoginUserDTO;
+import com.zjj.seckill.domain.dto.SeckillUserDTO;
 import com.zjj.seckill.domain.exception.SeckillException;
 import com.zjj.seckill.domain.model.SeckillUser;
 import com.zjj.seckill.domain.repository.SeckillUserRepository;
@@ -31,8 +33,39 @@ public class SeckillUserServiceImpl implements SeckillUserService {
     private SeckillUserRepository seckillUserRepository;
 
     @Override
+    public Long insert(SeckillUserDTO seckillUserDTO) {
+        // 参数校验
+        if (seckillUserDTO == null) {
+            throw new SeckillException(HttpCode.USERNAME_IS_NULL);
+        }
+        if (StringUtils.isBlank(seckillUserDTO.getUserName())) {
+            throw new SeckillException(HttpCode.USERNAME_IS_NULL);
+        }
+        if (StringUtils.isBlank(seckillUserDTO.getPassword())) {
+            throw new SeckillException(HttpCode.PASSWORD_IS_NULL);
+        }
+
+        // 根据userName查询User
+        SeckillUser oldSeckillUser = seckillUserRepository.getSeckillUserByUserName(seckillUserDTO.getUserName());
+        if (oldSeckillUser != null) {
+            throw new SeckillException(HttpCode.USERNAME_IS_EXIST);
+        }
+
+        int salt = (int) (Math.random() * 900000) + 100000;
+        String encryptPassword = DigestUtils.md5DigestAsHex((seckillUserDTO.getPassword() + salt).getBytes());
+
+        SeckillUser seckillUser = new SeckillUser();
+        seckillUser.setUserName(seckillUserDTO.getUserName());
+        seckillUser.setPassword(encryptPassword);
+        seckillUser.setSalt(String.valueOf(salt));
+        int num = seckillUserRepository.insert(seckillUser);
+        return seckillUser.getId();
+    }
+
+    @Override
     public SeckillUser getSeckillUserByUserId(Long userId) {
-        return redisManager.getCacheObject(RedisCacheConstants.LOGIN_TOKEN_KEY + userId);
+        SeckillLoginUserDTO loginUserDTO = redisManager.getCacheObject(RedisCacheConstants.LOGIN_TOKEN_KEY + userId);
+        return loginUserDTO.getUser();
     }
 
 

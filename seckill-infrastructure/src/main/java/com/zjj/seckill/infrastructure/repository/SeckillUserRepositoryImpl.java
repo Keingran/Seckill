@@ -19,6 +19,11 @@ public class SeckillUserRepositoryImpl implements SeckillUserRepository {
     private SeckillUserMapper seckillUserMapper;
 
     @Override
+    public int insert(SeckillUser seckillUser) {
+        return seckillUserMapper.insert(seckillUser);
+    }
+
+    @Override
     public SeckillUser getSeckillUserByUserName(String userName) {
         return seckillUserMapper.getSeckillUserByUserName(userName);
     }

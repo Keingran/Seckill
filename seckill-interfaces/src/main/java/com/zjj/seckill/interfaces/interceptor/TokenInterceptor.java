@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,27 +37,28 @@ public class TokenInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-//        try {
-            // 从请求头中获取Token
-            String token = request.getHeader(header);
-            if (StringUtils.isEmpty(token)) {
-                throw new SeckillException(HttpCode.USER_NOT_LOGIN);
-            }
-
-            // 通过Token获取用户
-            SeckillLoginUserDTO loginUser = tokenManager.getLoginUser(request);
-            if (loginUser == null) {
-                throw new SeckillException(HttpCode.USER_NOT_LOGIN);
-            }
-
-            tokenManager.verifyToken(loginUser);
+        if (!(handler instanceof HandlerMethod)) {
             return true;
-//        } catch (SeckillException e) {
-//            throw new SeckillException(e.getCode(), e.getMessage());
-//        } catch (Exception e) {
-//            log.error("TokenInterceptor error", e);
-//        }
-//        return false;
+        }
+
+        // 从请求头中获取Token
+        String token = request.getHeader(header);
+        if (StringUtils.isEmpty(token)) {
+            throw new SeckillException(HttpCode.USER_NOT_LOGIN);
+        }
+
+        // 通过Token获取用户
+        SeckillLoginUserDTO loginUser = tokenManager.getLoginUser(request);
+        if (loginUser == null) {
+            throw new SeckillException(HttpCode.USER_NOT_LOGIN);
+        }
+
+        boolean verifyResult = tokenManager.verifyAndRefreshToken(token, loginUser);
+        if (!verifyResult) {
+            throw new SeckillException(HttpCode.USER_NOT_LOGIN);
+        }
+
+        return true;
     }
 
     /**

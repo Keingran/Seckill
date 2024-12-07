@@ -39,7 +39,7 @@
         <jaxb.version>2.3.0</jaxb.version>
         <activation.version>1.1.1</activation.version>
         <hibernate.version>5.2.4.Final</hibernate.version>
-        <jdbc.version>5.1.30</jdbc.version>
+        <jdbc.version>8.0.22</jdbc.version>
         <druid.version>1.2.3</druid.version>
         <junit.version>4.12</junit.version>
         <mybatis.version>3.4.6</mybatis.version>

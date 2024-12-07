@@ -160,8 +160,8 @@ public class TokenManager {
     /**
      * 验证Token有效期，如果相差不足20分钟，自动刷新缓存
      */
-    public Boolean verifyToken(SeckillLoginUserDTO loginUser) {
-        boolean verify = JwtUtils.verify(loginUser.getToken(), secret);
+    public Boolean verifyAndRefreshToken(String token, SeckillLoginUserDTO loginUser) {
+        boolean verify = verifyToken(token);
         if (!verify) {
             return false;
         }

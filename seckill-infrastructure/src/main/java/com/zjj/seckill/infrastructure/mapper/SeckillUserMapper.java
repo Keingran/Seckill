@@ -13,10 +13,16 @@ import org.apache.ibatis.annotations.Param;
 public interface SeckillUserMapper {
 
     /**
+     * 新增
+     */
+    int insert(SeckillUser seckillUser);
+
+    /**
      * 根据用户名获取用户信息
      *
      * @param userName userName
      * @return SeckillUser
      */
     SeckillUser getSeckillUserByUserName(@Param("userName") String userName);
+
 }

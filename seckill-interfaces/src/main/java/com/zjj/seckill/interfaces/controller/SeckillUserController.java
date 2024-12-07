@@ -4,6 +4,7 @@ import com.zjj.seckill.application.service.SeckillUserService;
 import com.zjj.seckill.domain.dto.SeckillUserDTO;
 import com.zjj.seckill.domain.response.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,10 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/user")
+@CrossOrigin(allowCredentials = "true", allowedHeaders = "*", originPatterns = "*")
 public class SeckillUserController {
 
     @Autowired
     private SeckillUserService seckillUserService;
+
+    /**
+     * 新增用户
+     */
+    @RequestMapping(value = "/insert")
+    public Result insert(@RequestBody SeckillUserDTO seckillUserDTO) {
+        return Result.success(seckillUserService.insert(seckillUserDTO));
+    }
 
     /**
      * 测试系统
@@ -30,7 +40,7 @@ public class SeckillUserController {
     }
 
     /**
-     * 测试系统
+     * getByUserId
      */
     @RequestMapping(value = "/getByUserId")
     public Result getByUserId(@RequestParam(value = "userId") Long userId) {
